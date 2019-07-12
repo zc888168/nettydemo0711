@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 @Service
 public class DemoClient {
     private Channel channel;
+    private static final String PING = "ping";
 
     public void connect(int port, String host) throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
@@ -34,16 +35,16 @@ public class DemoClient {
     public static void main(String[] args) {
         int port = 56789;
         try {
-            DemoClient timerClient = new DemoClient();
-            timerClient.connect(port, "localhost");
-            Channel channel = timerClient.getChannel();
+            DemoClient demoClient = new DemoClient();
+            demoClient.connect(port, "localhost");
+            Channel channel = demoClient.getChannel();
             String coutent = "please intput data  by the console";
 
-            timerClient.writeMsg(channel, coutent);
+            demoClient.writeMsg(channel, coutent);
             while(true){
                 BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
                 String data = in.readLine();
-                timerClient.writeMsg(channel,  data);
+                demoClient.writeMsg(channel,  data);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,6 +64,9 @@ public class DemoClient {
         return channel;
     }
 
+    public void ping( DemoClient demoClient){
+        demoClient.writeMsg(demoClient.getChannel(), PING);
+    }
     public void shutdown(Channel channel, EventLoopGroup group) {
         if (channel != null && channel.isActive()) {
             channel.close();
