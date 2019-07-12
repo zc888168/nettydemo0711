@@ -26,16 +26,16 @@ public class DemoController {
     }
     @RequestMapping("/startServer")
     public String startServer(){
-        timerServer.start();
+        //timerServer.start();
         return "success";
     }
     @RequestMapping("/startClient")
     public String startClient(){
-        try {
-            timerClient.start();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            timerClient.start();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         return "success";
     }
 }
