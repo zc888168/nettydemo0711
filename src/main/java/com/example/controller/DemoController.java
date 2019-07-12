@@ -1,7 +1,7 @@
 package com.example.controller;
 
-import com.example.client.TimerClient;
-import com.example.server.TimerServer;
+import com.example.client.DemoClient;
+import com.example.server.DemoServer;
 import com.example.service.DemoService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,9 +15,9 @@ public class DemoController {
     @Resource
     private DemoService demoService;
     @Resource
-    private TimerServer timerServer;
+    private DemoServer timerServer;
     @Resource
-   private TimerClient timerClient;
+   private DemoClient timerClient;
     @RequestMapping("/send")
     public String sendMsg(@RequestParam(value = "msg") String msg){
 
