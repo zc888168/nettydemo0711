@@ -1,13 +1,11 @@
 package com.example.server;
 
 import com.example.config.PingPong;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import com.example.protocol.MessageProto;
+import com.google.protobuf.ByteString;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-
-import java.util.Date;
  
  
 public class DemoServerHandler extends ChannelInboundHandlerAdapter {
@@ -21,19 +19,22 @@ public class DemoServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("server receive msg ....");
-        ByteBuf buf = (ByteBuf) msg;
-        byte[] req = new byte[buf.readableBytes()];
-        buf.readBytes(req);
-        String body = new String(req, "UTF-8");
+        MessageProto.Message message = (MessageProto.Message) msg;
+
+        String body = message.getId();
         System.out.println("The time server receive order:" + body);
-        ByteBuf resp;
-        if ((PingPong.PING + "\r\n").equals(body)){
-            resp = Unpooled.copiedBuffer(PingPong.PONG.getBytes());
+        MessageProto.Message revData;
+        if ((PingPong.PING ).equals(body)){
+            ByteString byteString = ByteString.copyFrom(PingPong.PONG.getBytes());
+            revData = MessageProto.Message.newBuilder().setId(PingPong.PONG)
+                    .setContent(2).setData(byteString).build();
         } else {
-            String currentTime = String.valueOf(new Date().getTime());
-             resp = Unpooled.copiedBuffer(currentTime.getBytes());
+            ByteString byteString = ByteString.copyFrom(body.getBytes());
+            revData = MessageProto.Message.newBuilder().setId(body)
+                    .setContent(2).setData(byteString).build();
         }
-        ctx.writeAndFlush(resp);
+
+        ctx.writeAndFlush(revData);
         System.out.println("server send msg ....");
     }
 

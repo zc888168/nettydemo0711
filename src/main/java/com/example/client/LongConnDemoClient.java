@@ -1,6 +1,9 @@
 package com.example.client;
 
 import com.example.config.DemoServerInfo;
+import com.example.protocol.MessageProto;
+import com.google.protobuf.ByteString;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.Timer;
@@ -21,7 +24,13 @@ public class LongConnDemoClient {
     }
 
     public void writeMsg(String content) {
-        demoClient.writeMsg(demoClient.getChannel(), content);
+        if(StringUtils.isEmpty(content)){
+            return;
+        }
+        ByteString byteString = ByteString.copyFrom(content.getBytes());
+        MessageProto.Message message = MessageProto.Message.newBuilder()
+                .setId(content).setContent(2).setData(byteString).build();
+        demoClient.writeMsg(demoClient.getChannel(), message);
     }
 
     private void init() {

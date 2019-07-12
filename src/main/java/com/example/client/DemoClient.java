@@ -1,8 +1,9 @@
 package com.example.client;
 
 import com.example.config.PingPong;
+import com.example.protocol.MessageProto;
+import com.google.protobuf.ByteString;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -30,11 +31,11 @@ public class DemoClient {
     }
 
 
-    public ChannelFuture writeMsg(Channel channel, String content) {
+    public ChannelFuture writeMsg(Channel channel, MessageProto.Message message) {
         if (null == channel || !channel.isActive()) {
-            System.out.println("发送消息失败，连接未注册或非活动状态[channel=" + channel + "]: content " + content);
+            System.out.println("发送消息失败，连接未注册或非活动状态[channel=" + channel + "]: content " + message.toString());
         }
-        ChannelFuture future = channel.writeAndFlush(Unpooled.copiedBuffer((content + "\r\n").getBytes()));
+        ChannelFuture future = channel.writeAndFlush(message);
         return future;
     }
 
@@ -44,7 +45,10 @@ public class DemoClient {
     }
 
     public void ping( ){
-        writeMsg(channel, PingPong.PING);
+        ByteString byteString = ByteString.copyFrom(PingPong.PING.getBytes());
+        MessageProto.Message message = MessageProto.Message.newBuilder()
+                .setId(PingPong.PING).setContent(0).setData(byteString).build();
+        writeMsg(channel, message);
     }
     public void shutdown(Channel channel, EventLoopGroup group) {
         if (channel != null && channel.isActive()) {
