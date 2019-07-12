@@ -1,5 +1,6 @@
 package com.example.server;
 
+import com.example.config.PingPong;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -25,8 +26,13 @@ public class DemoServerHandler extends ChannelInboundHandlerAdapter {
         buf.readBytes(req);
         String body = new String(req, "UTF-8");
         System.out.println("The time server receive order:" + body);
-        String currentTime  = String.valueOf(new Date().getTime());
-        ByteBuf resp = Unpooled.copiedBuffer(currentTime.getBytes());
+        ByteBuf resp;
+        if ((PingPong.PING + "\r\n").equals(body)){
+            resp = Unpooled.copiedBuffer(PingPong.PONG.getBytes());
+        } else {
+            String currentTime = String.valueOf(new Date().getTime());
+             resp = Unpooled.copiedBuffer(currentTime.getBytes());
+        }
         ctx.writeAndFlush(resp);
         System.out.println("server send msg ....");
     }

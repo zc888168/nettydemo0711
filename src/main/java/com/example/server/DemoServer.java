@@ -6,11 +6,15 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import org.springframework.stereotype.Service;
 
-@Service
 public class DemoServer {
+    private static volatile  DemoServer instance = new DemoServer();
+    private DemoServer(){
 
+    }
+    public static DemoServer getInstance(){
+        return instance;
+    }
 
     public void bind(int port) {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -56,15 +60,6 @@ public class DemoServer {
             }
             System.out.println("客户端连接服务关闭成功");
 
-        }
-    }
-
-    public static void main(String[] args) {
-        int port = 56789;
-        try {
-            new DemoServer().bind(port);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }
